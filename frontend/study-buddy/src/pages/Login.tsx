@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import './Home.css'
+import './Login.css'
 
-function App() {
+function Login() {
   const [email, setEmail] = useState('')
 
   const handleNext = (e: React.FormEvent) => {
@@ -45,8 +45,6 @@ function App() {
             >
               Next →
             </button>
-
-
           </form>
         </div>
       </div>
@@ -54,4 +52,4 @@ function App() {
   )
 }
 
-export default App
+export default Login
