@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import './Main.css'
+import './Home.css'
 import { parseClassLevel } from '../utils'
 
 interface Student {
