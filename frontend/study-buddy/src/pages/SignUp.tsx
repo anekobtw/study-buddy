@@ -69,7 +69,7 @@ function SignUp() {
           <h2 className="text-2xl font-bold text-[#006747] mb-2 text-center">Create Your Profile</h2>
           <p className="text-gray-600 text-center mb-8">Tell us about yourself to find the perfect study buddy</p>
           
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-3">
             {/* Email */}
             <div className="input-group">
               <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
