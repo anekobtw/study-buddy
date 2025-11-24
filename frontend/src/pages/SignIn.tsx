@@ -1,16 +1,30 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import apiClient from '../api/client'
 import './SignIn.css'
 
 function SignIn() {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   })
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Login attempt:', formData)
-    // Handle login logic here
+    setError('')
+    setLoading(true)
+
+    try {
+      await apiClient.signIn(formData)
+      navigate('/home')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to sign in')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,6 +49,12 @@ function SignIn() {
           <p className="text-gray-600 text-center mb-3">Enter your credentials to continue</p>
           
           <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium">
+                {error}
+              </div>
+            )}
+
             {/* Email */}''
             <div className="input-group pb-3">
               <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
@@ -75,10 +95,11 @@ function SignIn() {
             </div>
             
             <button 
-              type="submit" 
-              className="w-full py-4 bg-[#088e64] text-white border-none rounded-xl text-lg font-bold cursor-pointer transition-all duration-500 ease-out hover:bg-[#0a9f72] hover:shadow-[0_8px_20px_rgba(8,142,100,0.4)] hover:scale-[1.02] active:scale-[0.98]"
+              type="submit"
+              disabled={loading}
+              className="w-full py-4 bg-[#088e64] text-white border-none rounded-xl text-lg font-bold cursor-pointer transition-all duration-500 ease-out hover:bg-[#0a9f72] hover:shadow-[0_8px_20px_rgba(8,142,100,0.4)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
-              Sign In
+              {loading ? 'Signing In...' : 'Sign In'}
             </button>
 
             <div className="text-center mt-6">

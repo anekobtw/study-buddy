@@ -1,29 +1,76 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import apiClient from '../api/client'
 import './SignUp.css'
 
 function SignUp() {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     email: '',
     fullName: '',
     year: '',
     major: '',
     description: '',
+    password: '',
     preferredStudyTime: 0
   })
   
   const [classes, setClasses] = useState<{ name: string; level: number }[]>([])
   const [currentClass, setCurrentClass] = useState({ name: '', level: 0 })
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const registrationData = {
-      ...formData,
-      classes: classes.reduce((acc, cls) => {
-        acc[cls.name] = cls.level
-        return acc
-      }, {} as { [key: string]: number })
+    setError('')
+
+    // Validation
+    if (!formData.email.endsWith('@usf.edu')) {
+      setError('Please use your USF email address (@usf.edu)')
+      return
     }
-    console.log('Registration data:', registrationData)
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long')
+      return
+    }
+
+    if (!formData.year) {
+      setError('Please select your year')
+      return
+    }
+
+    if (classes.length === 0) {
+      setError('Please add at least one class')
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const registrationData = {
+        email: formData.email,
+        fullName: formData.fullName,
+        password: formData.password,
+        year: formData.year as 'Freshman' | 'Sophomore' | 'Junior' | 'Senior' | 'Graduate',
+        major: formData.major,
+        preferredStudyTime: formData.preferredStudyTime as 0 | 1 | 2 | 3,
+        description: formData.description,
+        classes: classes.reduce((acc, cls) => {
+          acc[cls.name] = cls.level as 0 | 1 | 2
+          return acc
+        }, {} as Record<string, 0 | 1 | 2>)
+      }
+
+      const response = await apiClient.signUp(registrationData)
+      console.log('Signup successful:', response)
+      navigate('/home')
+    } catch (err) {
+      console.error('Signup error:', err)
+      setError(err instanceof Error ? err.message : 'Failed to create account')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -70,6 +117,12 @@ function SignUp() {
           <p className="text-gray-600 text-center mb-8">Tell us about yourself to find the perfect study buddy</p>
           
           <form onSubmit={handleSubmit} className="space-y-3">
+            {error && (
+              <div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium">
+                {error}
+              </div>
+            )}
+
             {/* Email */}
             <div className="input-group">
               <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
@@ -98,6 +151,23 @@ function SignUp() {
                 value={formData.fullName}
                 onChange={handleInputChange}
                 placeholder="John Doe"
+                required
+              />
+            </div>
+
+            {/* Password */}
+            <div className="input-group">
+              <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                placeholder="Create a strong password"
+                minLength={6}
                 required
               />
             </div>
@@ -164,7 +234,7 @@ function SignUp() {
             {/* Classes */}
             <div className="input-group">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Classes (Add your skill level for each class)
+                Classes <span className="text-red-500">*</span> (Add at least one)
               </label>
               
               <div className="space-y-3">
@@ -241,14 +311,15 @@ function SignUp() {
             
             <button 
               type="submit" 
-              className="w-full py-4 bg-[#088e64] text-white border-none rounded-xl text-lg font-bold cursor-pointer transition-all duration-500 ease-out hover:bg-[#0a9f72] hover:shadow-[0_8px_20px_rgba(8,142,100,0.4)] hover:scale-[1.02] active:scale-[0.98]"
+              disabled={loading}
+              className="w-full py-4 bg-[#088e64] text-white border-none rounded-xl text-lg font-bold cursor-pointer transition-all duration-500 ease-out hover:bg-[#0a9f72] hover:shadow-[0_8px_20px_rgba(8,142,100,0.4)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
-              Create Profile →
+              {loading ? 'Creating Account...' : 'Create Profile →'}
             </button>
 
             <div className="text-center mt-4">
               <p className="text-sm text-gray-500">
-                Already have an account? <a href="#" className="text-[#088e64] font-semibold hover:text-[#0a9f72] transition-colors">Sign in</a>
+                Already have an account? <a href="/signin" className="text-[#088e64] font-semibold hover:text-[#0a9f72] transition-colors">Sign in</a>
               </p>
             </div>
           </form>

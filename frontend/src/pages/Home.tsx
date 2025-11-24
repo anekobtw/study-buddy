@@ -1,69 +1,41 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import apiClient from '../api/client'
 import './Home.css'
 import { parseClassLevel } from '../utils'
+import type { Student } from '../enums.tsx'
 
-interface Student {
-  uid: string
-  fullName: string
-  USFEmail: string
-  preferredStudyTime: number
-  classes: { [className: string]: number }
-  major: string
-  year: string
-  description: string
-  pfp?: string
-}
 
 function Main() {
+  const navigate = useNavigate()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [swipeOffset, setSwipeOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
-  
-  const [cards] = useState<Student[]>([
-    {
-      uid: "1",
-      fullName: "Sarah Martinez",
-      USFEmail: "smartinez@usf.edu",
-      major: "Computer Science",
-      year: "Junior",
-      preferredStudyTime: 0,
-      classes: {
-        "Data Structures": 2,
-        "Algorithms": 1,
-        "Web Development": 2
-      },
-      description: "Looking for study partners for CS classes! Love coding and coffee ☕"
-    },
-    {
-      uid: "2",
-      fullName: "Michael Chen",
-      USFEmail: "mchen@usf.edu",
-      major: "Biology",
-      year: "Sophomore",
-      preferredStudyTime: 1,
-      classes: {
-        "Organic Chemistry": 0,
-        "Genetics": 1,
-        "Cell Biology": 1
-      },
-      description: "Pre-med student seeking study group for tough science courses 🧬"
-    },
-    {
-      uid: "3",
-      fullName: "Emily Rodriguez",
-      USFEmail: "erodriguez@usf.edu",
-      major: "Business Administration",
-      year: "Senior",
-      preferredStudyTime: 2,
-      classes: {
-        "Marketing": 2,
-        "Finance": 2,
-        "Business Strategy": 1
-      },
-      description: "Let's ace these business classes together! Always down for group study sessions 📊"
+  const [cards, setCards] = useState<Student[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadBatch()
+  }, [])
+
+  const loadBatch = async () => {
+    try {
+      if (!apiClient.isAuthenticated()) {
+        navigate('/signin')
+        return
+      }
+      const response = await apiClient.getNextBatch()
+      setCards(response.batch)
+    } catch (error) {
+      console.error('Failed to load batch:', error)
+      if (error instanceof Error && error.message.includes('401')) {
+        navigate('/signin')
+      }
+    } finally {
+      setLoading(false)
     }
-  ])
+  }
 
 
   const getStudyTimeInfo = (time: number) => {
@@ -92,13 +64,39 @@ function Main() {
     return timeMap[time] || timeMap[0]
   }
 
-  const handleLike = () => {
-    console.log('Liked:', cards[currentIndex]?.fullName)
+  const handleLike = async () => {
+    const card = cards[currentIndex]
+    if (!card) return
+
+    try {
+      const response = await apiClient.submitSwipe({
+        targetUid: card.uid,
+        direction: 'right'
+      })
+      
+      if (response.isMutualMatch) {
+        alert(`🎉 It's a match with ${card.fullName}!`)
+      }
+    } catch (error) {
+      console.error('Failed to submit swipe:', error)
+    }
+    
     nextCard()
   }
 
-  const handleDislike = () => {
-    console.log('Passed:', cards[currentIndex]?.fullName)
+  const handleDislike = async () => {
+    const card = cards[currentIndex]
+    if (!card) return
+
+    try {
+      await apiClient.submitSwipe({
+        targetUid: card.uid,
+        direction: 'left'
+      })
+    } catch (error) {
+      console.error('Failed to submit swipe:', error)
+    }
+    
     nextCard()
   }
 
@@ -106,7 +104,8 @@ function Main() {
     if (currentIndex < cards.length - 1) {
       setCurrentIndex(currentIndex + 1)
     } else {
-      console.log('No more cards')
+      setCurrentIndex(0)
+      loadBatch()
     }
   }
 
@@ -152,9 +151,15 @@ function Main() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
           </button>
-          <button className="text-green-800 cursor-pointer hover:text-[#CFC493] transition-colors">
+          <button 
+            onClick={async () => {
+              await apiClient.signOut()
+              navigate('/signin')
+            }}
+            className="text-green-800 cursor-pointer hover:text-[#CFC493] transition-colors"
+          >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
           </button>
         </div>
@@ -162,7 +167,12 @@ function Main() {
 
       {/* Card Container */}
       <div className="flex-1 flex items-center justify-center px-4 py-8">
-        {currentCard ? (
+        {loading ? (
+          <div className="text-gray-600 text-center">
+            <div className="text-4xl mb-4">⏳</div>
+            <p>Loading study buddies...</p>
+          </div>
+        ) : currentCard ? (
           <div className="relative w-full max-w-sm">
             <div 
               className="bg-white rounded-3xl shadow-2xl overflow-hidden cursor-grab active:cursor-grabbing select-none"
