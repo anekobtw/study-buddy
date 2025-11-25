@@ -90,3 +90,54 @@ def verify_user_password(stored_password: str, provided_password: str) -> bool:
 def delete_user(email: str) -> None:
     cursor.execute("DELETE FROM users WHERE usf_email = ?", (email,))
     conn.commit()
+
+
+def get_all_users_except(email: str):
+    cursor.execute("SELECT * FROM users WHERE usf_email != ?", (email,))
+    rows = cursor.fetchall()
+    return [dict(row) for row in rows]
+
+
+def update_user(email: str, **fields):
+    import json
+    if not fields:
+        return
+    
+    if "classes" in fields:
+        fields["classes"] = json.dumps(fields["classes"])
+    
+    field_map = {
+        "fullName": "full_name",
+        "preferredStudyTime": "preferred_study_time"
+    }
+    
+    db_fields = {field_map.get(k, k): v for k, v in fields.items()}
+    set_clause = ", ".join(f"{k} = ?" for k in db_fields.keys())
+    
+    cursor.execute(
+        f"UPDATE users SET {set_clause} WHERE usf_email = ?",
+        list(db_fields.values()) + [email]
+    )
+    conn.commit()
+
+
+def get_swiped_uids(email: str) -> set:
+    cursor.execute("SELECT target_uid FROM swipes WHERE user_id = ?", (email,))
+    rows = cursor.fetchall()
+    return {row["target_uid"] for row in rows}
+
+
+def create_swipe(user_email: str, target_email: str, direction: str):
+    cursor.execute(
+        "INSERT OR REPLACE INTO swipes (user_id, target_uid, direction) VALUES (?, ?, ?)",
+        (user_email, target_email, direction)
+    )
+    conn.commit()
+
+
+def check_mutual_swipe(user_email: str, target_email: str) -> bool:
+    cursor.execute(
+        "SELECT * FROM swipes WHERE user_id = ? AND target_uid = ? AND direction = 'right'",
+        (target_email, user_email)
+    )
+    return cursor.fetchone() is not None

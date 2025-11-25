@@ -8,8 +8,8 @@ class SignUpRequest(BaseModel):
     fullName: str
     year: Literal["Freshman", "Sophomore", "Junior", "Senior", "Graduate"]
     major: str
-    preferredStudyTime: Literal[0, 1, 2, 3]
-    classes: Dict[str, Literal[0, 1, 2]]
+    preferredStudyTime: int
+    classes: Dict[str, int]
     description: str
     password: str
 
@@ -25,8 +25,8 @@ class UpdateProfileRequest(BaseModel):
         None
     )
     major: Optional[str] = None
-    preferredStudyTime: Optional[Literal[0, 1, 2, 3]] = None
-    classes: Optional[Dict[str, Literal[0, 1, 2]]] = None
+    preferredStudyTime: Optional[int] = None
+    classes: Optional[Dict[str, int]] = None
     description: Optional[str] = None
 
 

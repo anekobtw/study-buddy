@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import apiClient from '../api/client'
+import ProfileModal from '../components/ProfileModal'
 import './Home.css'
 import { parseClassLevel } from '../utils'
 import type { Student } from '../enums.tsx'
@@ -14,6 +15,7 @@ function Main() {
   const [startX, setStartX] = useState(0)
   const [cards, setCards] = useState<Student[]>([])
   const [loading, setLoading] = useState(true)
+  const [showProfileModal, setShowProfileModal] = useState(false)
 
   useEffect(() => {
     loadBatch()
@@ -70,12 +72,12 @@ function Main() {
 
     try {
       const response = await apiClient.submitSwipe({
-        targetUid: card.uid,
+        targetUid: (card.usf_email || card.USFEmail)!,
         direction: 'right'
       })
       
       if (response.isMutualMatch) {
-        alert(`🎉 It's a match with ${card.fullName}!`)
+        alert(`🎉 It's a match with ${card.full_name || card.fullName}!`)
       }
     } catch (error) {
       console.error('Failed to submit swipe:', error)
@@ -90,7 +92,7 @@ function Main() {
 
     try {
       await apiClient.submitSwipe({
-        targetUid: card.uid,
+        targetUid: (card.usf_email || card.USFEmail)!,
         direction: 'left'
       })
     } catch (error) {
@@ -142,10 +144,21 @@ function Main() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      <ProfileModal isOpen={showProfileModal} onClose={() => setShowProfileModal(false)} />
+      
       {/* Header */}
       <header className="p-6 flex justify-between items-center">
         <div className="text-green-900 text-2xl font-bold">USF Study Buddy</div>
         <div className="flex gap-4">
+          <button 
+            onClick={() => setShowProfileModal(true)}
+            className="text-green-800 cursor-pointer hover:text-[#CFC493] transition-colors"
+            title="My Profile"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </button>
           <button className="text-green-800 cursor-pointer hover:text-[#CFC493] transition-colors">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -204,7 +217,7 @@ function Main() {
               {/* Card Image/Avatar */}
               <div className="h-96 bg-linear-to-br from-[#088e64] to-[#006747] flex items-center justify-center">
                 <div className="text-white text-8xl font-bold">
-                  {currentCard.fullName.charAt(0)}
+                  {(currentCard.full_name || currentCard.fullName || '?').charAt(0)}
                 </div>
               </div>
 
@@ -213,10 +226,10 @@ function Main() {
                 {/* Name, Email, and Year */}
                 <div>
                   <div className="flex items-baseline justify-between mb-1">
-                    <h2 className="text-2xl font-bold text-gray-900">{currentCard.fullName}</h2>
+                    <h2 className="text-2xl font-bold text-gray-900">{currentCard.full_name || currentCard.fullName}</h2>
                     <span className="text-sm text-gray-500 font-medium">{currentCard.year}</span>
                   </div>
-                  <p className="text-gray-500 text-sm">{currentCard.USFEmail}</p>
+                  <p className="text-gray-500 text-sm">{currentCard.usf_email || currentCard.USFEmail}</p>
                 </div>
                 
                 {/* Major */}
@@ -226,11 +239,11 @@ function Main() {
                 
                 {/* Study Time */}
                 <div className="flex items-center gap-2">
-                  <span className={`${getStudyTimeInfo(currentCard.preferredStudyTime).color}`}>
-                    {getStudyTimeInfo(currentCard.preferredStudyTime).icon}
+                  <span className={`${getStudyTimeInfo((currentCard.preferred_study_time || currentCard.preferredStudyTime) ?? 0).color}`}>
+                    {getStudyTimeInfo((currentCard.preferred_study_time || currentCard.preferredStudyTime) ?? 0).icon}
                   </span>
                   <p className="text-sm text-gray-700">
-                    Prefers <span className="font-semibold">{getStudyTimeInfo(currentCard.preferredStudyTime).label}</span> study sessions
+                    Prefers <span className="font-semibold">{getStudyTimeInfo((currentCard.preferred_study_time || currentCard.preferredStudyTime) ?? 0).label}</span> study sessions
                   </p>
                 </div>
                 
@@ -243,8 +256,8 @@ function Main() {
                 <div className="pt-2 border-t border-gray-100">
                   <p className="text-sm font-semibold text-gray-700 mb-2">Classes</p>
                   <div className="flex flex-wrap gap-2">
-                    {Object.entries(currentCard.classes).map(([className, level]) => {
-                      const levelInfo = parseClassLevel(level)
+                    {Object.entries(typeof currentCard.classes === 'string' ? JSON.parse(currentCard.classes) : currentCard.classes).map(([className, level]) => {
+                      const levelInfo = parseClassLevel(level as number)
                       return (
                         <span 
                           key={className} 
