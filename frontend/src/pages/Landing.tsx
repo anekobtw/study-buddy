@@ -1,6 +1,17 @@
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import apiClient from '../api/client'
 import './Landing.css'
 
 function Landing() {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (apiClient.isAuthenticated()) {
+      navigate('/home')
+    }
+  }, [navigate])
+
   return (
     <div className="min-h-screen w-full flex justify-center items-center p-5">
       <div className="backdrop-blur-2xl bg-white/95 shadow-[0_20px_60px_0_rgba(0,0,0,0.3)] rounded-3xl p-0 w-full max-w-[680px] overflow-hidden">

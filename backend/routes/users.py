@@ -67,6 +67,12 @@ def signup(request: SignUpRequest):
     return {"status": "success", "token": token, "user": user_data}
 
 
+@router.post("/signout")
+def signout():
+    """Sign out user (client handles token removal)."""
+    return {"status": "success"}
+
+
 @router.get("/users/me")
 def get_current_user(authorization: Optional[str] = Header(None)):
     """Get current authenticated user profile."""

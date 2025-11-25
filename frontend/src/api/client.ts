@@ -80,11 +80,14 @@ class ApiClient {
   }
 
   async signOut() {
+    this.token = null
+    localStorage.removeItem('auth_token')
+    
     try {
       await this.request('/api/signout', { method: 'POST' })
-    } finally {
-      this.token = null
-      localStorage.removeItem('auth_token')
+    } catch (error) {
+      // Ignore errors - token is already cleared locally
+      console.log('Signout request failed, but local token cleared')
     }
   }
 

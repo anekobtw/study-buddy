@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import apiClient from '../api/client'
 import './SignUp.css'
@@ -19,6 +19,12 @@ function SignUp() {
   const [currentClass, setCurrentClass] = useState({ name: '', level: 0 })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (apiClient.isAuthenticated()) {
+      navigate('/home')
+    }
+  }, [navigate])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
