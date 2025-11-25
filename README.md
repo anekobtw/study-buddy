@@ -1,25 +1,20 @@
 # 🎓 USF Study Buddy
 
-<div align="center">
+A web app to find study partners. The project was designed for HackJam 2025. **Made with 💚 to USF Bulls.**
 
-A web app to find study partners. The project was designed for HackJam 2025.
-
-**Made with 💚 to USF Bulls.**
-
-[Getting Started](#getting-started) • [Screenshots](#screenshots) • [License](#-license)
-
-</div>
-
----
 
 ## Getting Started
+
+### Environment
+```bash
+cp ../.env.example ../.env   # PLEASE CHANGE THE VARIABLES' VALUES
+```
 
 ### Backend Setup
 
 ```bash
 cd backend
 poetry install
-cp ../.env.example ../.env   # PLEASE CHANGE THE VARIABLES' VALUES
 poetry run python main.py
 ```
 
@@ -39,20 +34,6 @@ The frontend will run on `http://localhost:5173`
 ## Screenshots
 
 All the screenshits are located <a href="/photos">here</a>
-
-
-## ToDo
-
-- [ ] Real-time chat/messaging system  
-- [ ] Email notifications for matches  
-- [ ] Advanced filtering (by major, class, study time)  
-- [ ] Study group creation (3+ people)  
-- [ ] Calendar integration for scheduling study sessions  
-- [ ] Rate limiting and API throttling  
-- [ ] Profile pictures with cloud storage  
-- [ ] Match history and statistics  
-- [ ] Mobile app (React Native)
-
 
 ## 🤝 Contributing
 
