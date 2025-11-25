@@ -7,6 +7,12 @@
 .buildlog/
 .history
 
+# Environment variables
+.env
+
+# Database
+database.db
+
 
 
 # Flutter repo-specific

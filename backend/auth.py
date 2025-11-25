@@ -1,10 +1,14 @@
+import os
 from datetime import datetime, timedelta
 from typing import Optional
 
 import jwt
+from dotenv import load_dotenv
 from fastapi import Header, HTTPException, status
 
-SECRET_KEY = "your-secret-key-change-this-in-production"
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 
 

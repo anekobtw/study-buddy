@@ -1,8 +1,12 @@
+import os
 import sqlite3
 
 import bcrypt
+from dotenv import load_dotenv
 
-DB_PATH = "database.db"
+load_dotenv()
+
+DB_PATH = os.getenv("DB_PATH")
 
 conn = sqlite3.connect(DB_PATH, check_same_thread=False)
 conn.row_factory = sqlite3.Row
