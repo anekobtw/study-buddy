@@ -2,26 +2,17 @@
 
 <div align="center">
 
-**Find your perfect study partner at USF with swipe-based matching**
+A Tinder-style web application designed to help University of South Florida students find compatible study partners. The project was designed for HackJam 2025.
 
-[Getting Started](#-getting-started) • [Screenshots](#-screenshots) • [License](#-license)
+**Made with 💚 to USF Bulls.**
+
+[Getting Started](#getting-started) • [Screenshots](#screenshots) • [License](#-license)
 
 </div>
 
 ---
 
-## 📖 About
-
-A Tinder-style web application designed to help University of South Florida students find compatible study partners. The project was designed for HackJam 2025.
-
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Python 3.9+
-- Node.js 18+
-- Poetry (Python package manager)
-- npm or yarn
+## Getting Started
 
 ### Backend Setup
 
@@ -45,16 +36,12 @@ npm run dev
 The frontend will run on `http://localhost:5173`
 
 
-## 📸 Screenshots
+## Screenshots
 
-<img src="photos/main.png" alt="Landing Page" style="width:20%;">
-<img src="photos/signup.png" alt="Sign Up" style="width:20%;">
-<img src="photos/signin.png" alt="Sign In" style="width:20%;">
-<img src="photos/home.png" alt="Home" style="width:20%;">
-<img src="photos/card%20example.png" alt="Card Example" style="width:20%;">
+All the screenshits are located <a href="/photos">here</a>
 
 
-## 🎯 ToDo
+## ToDo
 
 - [ ] Real-time chat/messaging system  
 - [ ] Email notifications for matches  
@@ -80,11 +67,3 @@ This project was created for HackJam 2025. Contributions, issues, and feature re
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-<div align="center">
-
-**Made with 💚 for USF Bulls**
-
-</div>
