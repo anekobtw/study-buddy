@@ -2,7 +2,7 @@
 
 <div align="center">
 
-A Tinder-style web application designed to help University of South Florida students find compatible study partners. The project was designed for HackJam 2025.
+A web app to find study partners. The project was designed for HackJam 2025.
 
 **Made with 💚 to USF Bulls.**
 
