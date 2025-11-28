@@ -33,7 +33,7 @@ The frontend will run on `http://localhost:5173`
 
 ## Screenshots
 
-All the screenshits are located <a href="/photos">here</a>
+All the screenshots are located <a href="/photos">here</a>
 
 ## 🤝 Contributing
 

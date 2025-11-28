@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import apiClient from '../api/client'
-import './Landing.css'
+import BackgroundGrid from "../assets/BackgroundGrid.svg";
 
 function Landing() {
   const navigate = useNavigate()
@@ -13,47 +13,50 @@ function Landing() {
   }, [navigate])
 
   return (
-    <div className="min-h-screen w-full flex justify-center items-center p-5">
-      <div className="backdrop-blur-2xl bg-white/95 shadow-[0_20px_60px_0_rgba(0,0,0,0.3)] rounded-3xl p-0 w-full max-w-[680px] overflow-hidden">
-        
-        {/* Header with USF Logo */}
-        <div className="bg-linear-to-r from-[#088e64] to-[#037f58] px-12 pt-10 pb-8 text-center">
-          <h1 className="text-white text-3xl font-bold mb-2">Find Your Buddy Now!</h1>
-          <p className="text-[#CFC493] text-sm font-medium">University of South Florida</p>
-        </div>
+    <div className="relative flex min-h-screen w-full flex-col bg-[#f6f8f7] overflow-x-hidden font-['Inter',sans-serif]"
+    style={{ 
+            backgroundImage: `url(${BackgroundGrid})`, 
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat', 
+            backgroundPosition: 'center',
+            width: '100vw',
+            height: '100vh'
+          }}>
+      <div className="flex h-full grow flex-col">
+        <div className="px-4 md:px-10 lg:px-20 xl:px-40 flex flex-1 justify-center py-5">
+          <div className="flex flex-col max-w-6xl flex-1">
+            {/* Hero Section */}
+            <main className="flex flex-1 items-center justify-center py-16 md:py-24 lg:py-32">
+              <div className="flex flex-col gap-8 text-center px-4">
+                <div className="flex flex-col gap-4">
+                  <h1 className="text-neutral-900 text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tighter">
+                    Study Buddy
+                  </h1>
+                  <h2 className="text-zinc-600 text-lg md:text-xl font-normal leading-normal max-w-2xl mx-auto">
+                    The best way for University of South Florida students to connect and organize study sessions.
+                  </h2>
+                </div>
+                <div className="flex-wrap gap-3 flex justify-center">
+                  <button 
+                    onClick={() => navigate('/signup')}
+                    className="ease-in-out duration-150 hover:scale-110 flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-6 bg-[#13ec6d] text-[#102218] text-base font-bold leading-normal tracking-wide hover:bg-opacity-90 transition-all"
+                  >
+                    <span className="truncate">Sign Up</span>
+                  </button>
+                  <button 
+                    onClick={() => navigate('/signin')}
+                    className="ease-in-out duration-150 hover:scale-110 flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-6 bg-[#13ec6d]/20 text-zinc-900 text-base font-bold leading-normal tracking-wide hover:bg-[#13ec6d]/30 transition-all"
+                  >
+                    <span className="truncate">Sign In</span>
+                  </button>
+                </div>
+              </div>
+            </main>
 
-
-        {/* Content */}
-        <div className="px-12 py-10">
-          <h2 className="text-2xl font-bold text-[#006747] mb-2 text-center">Welcome to Study Buddy!</h2>
-          <p className="text-gray-600 text-center mb-8">Connect with fellow USF students and find your perfect study partner</p>
-          
-
-          <div className="space-y-4">
-            {/* Sign In Button */}
-            <button 
-              onClick={() => window.location.href = '/signin'}
-              className="w-full py-4 bg-[#088e64] text-white border-none rounded-xl text-lg font-bold cursor-pointer transition-all duration-500 ease-out hover:bg-[#0a9f72] hover:shadow-[0_8px_20px_rgba(8,142,100,0.4)] hover:scale-[1.02] active:scale-[0.98]"
-            >
-              Sign In
-            </button>
-
-
-            {/* Sign Up Button */}
-            <button 
-              onClick={() => window.location.href = '/signup'}
-              className="w-full py-4 bg-white text-[#088e64] border-2 border-[#088e64] rounded-xl text-lg font-bold cursor-pointer transition-all duration-500 ease-out hover:bg-[#f0fdf4] hover:shadow-[0_8px_20px_rgba(8,142,100,0.2)] hover:scale-[1.02] active:scale-[0.98]"
-            >
-              Sign Up
-            </button>
-          </div>
-
-
-          {/* Additional Info */}
-          <div className="mt-8 text-center">
-            <p className="text-sm text-gray-500">
-              Join hundreds of USF students finding their perfect study partners
-            </p>
+            {/* Footer */}
+            <footer className="flex flex-col gap-6 px-5 text-center">
+              <p className="text-zinc-500 text-sm font-normal leading-normal">© 2025 anekobtw. All Rights Reserved.</p>
+            </footer>
           </div>
         </div>
       </div>
