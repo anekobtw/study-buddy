@@ -1,0 +1,36 @@
+.wrapper {
+  height: 100vh;
+  display: grid;
+  place-items: center;
+}
+
+.typewriter {
+  display: inline-block;
+  padding-right: 0.4%;
+  max-width: 22ch;
+  animation: typing 3s steps(40) forwards, blink 1s step-end infinite;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 5px solid;
+  font-family: monospace;
+  font-size: 1.7em;
+}
+
+@keyframes typing {
+  from { max-width: 0; }
+  to { max-width: 22ch; }
+}
+
+@keyframes blink {
+  50% { border-color: transparent; }
+}
+
+body {
+  text-align: center;
+}
+
+.info {
+  position: absolute;
+  bottom: 0;
+  padding: 20px;
+}
