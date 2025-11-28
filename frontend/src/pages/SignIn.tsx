@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import apiClient from '../api/client'
-import './SignIn.css'
+import BackgroundGrid from "../assets/BackgroundGrid.svg"
 
 function SignIn() {
   const navigate = useNavigate()
@@ -41,81 +41,101 @@ function SignIn() {
   }
 
   return (
-    <div className="min-h-screen w-full flex justify-center items-center p-5">
-      <div className="backdrop-blur-2xl bg-white/95 shadow-[0_20px_60px_0_rgba(0,0,0,0.3)] rounded-3xl p-0 w-full max-w-[480px] overflow-hidden">
-        {/* Header */}
-        <div className="bg-linear-to-r from-[#088e64] to-[#037f58] px-12 pt-10 pb-8 text-center">
-          <h1 className="text-white text-3xl font-bold mb-2">Welcome Back!</h1>
-          <p className="text-[#CFC493] text-sm font-medium">University of South Florida</p>
-        </div>
-
-        {/* Form Content */}
-        <div className="px-12 py-10">
-          <h2 className="text-2xl font-bold text-[#006747] mb-2 text-center">Sign In</h2>
-          <p className="text-gray-600 text-center mb-3">Enter your credentials to continue</p>
-          
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
-              <div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium">
-                {error}
+    <div className="relative flex min-h-screen w-full flex-col bg-[#f6f8f7] overflow-x-hidden font-['Inter'] bg-cover bg-center" style={{ backgroundImage: `url(${BackgroundGrid})` }}>
+      <div className="flex h-full grow flex-col">
+        <div className="px-4 md:px-10 lg:px-20 xl:px-40 flex flex-1 justify-center items-center py-5">
+          <div className="w-full max-w-md">
+            <div className="bg-white rounded-2xl shadow-lg p-8">
+              {/* Header */}
+              <div className="text-center mb-8">
+                <h1 className="text-neutral-900 text-3xl font-bold mb-2">Welcome Back</h1>
+                <p className="text-zinc-600 text-sm">Sign in to continue to Study Buddy</p>
               </div>
-            )}
 
-            {/* Email */}''
-            <div className="input-group pb-3">
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="yourname@usf.edu"
-                required
-              />
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="space-y-5">
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                    {error}
+                  </div>
+                )}
+
+                {/* Email */}
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-neutral-900 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="yourname@usf.edu"
+                    className="w-full h-12 px-4 bg-white border-2 border-neutral-200 rounded-xl text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-[#13ec6d] transition-colors"
+                    required
+                  />
+                </div>
+
+                {/* Password */}
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium text-neutral-900 mb-2">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    placeholder="Enter your password"
+                    className="w-full h-12 px-4 bg-white border-2 border-neutral-200 rounded-xl text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-[#13ec6d] transition-colors"
+                    required
+                  />
+                </div>
+
+                {/* Submit Button */}
+                <button 
+                  type="submit"
+                  disabled={loading}
+                  className="w-full rounded-xl h-12 px-8 bg-neutral-900 text-white text-base font-semibold transition-all duration-300 hover:bg-[#13ec6d] hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                >
+                  {loading ? 'Signing In...' : 'Sign In'}
+                </button>
+
+                {/* Sign Up Link */}
+                <div className="text-center pt-2">
+                  <p className="text-sm text-zinc-600">
+                    Don't have an account?{' '}
+                    <button
+                      type="button"
+                      onClick={() => navigate('/signup')}
+                      className="text-neutral-900 font-semibold hover:text-[#13ec6d] transition-colors"
+                    >
+                      Sign Up
+                    </button>
+                  </p>
+                </div>
+              </form>
             </div>
 
-            {/* Password */}
-            <div className="input-group">
-              <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                placeholder="Enter your password"
-                required
-              />
-            </div>
-
-            {/* Forgot Password Link */}
-            <div className="text-right">
-              <a href="#" className="text-sm text-[#088e64] hover:text-[#0a9f72] font-medium transition-colors">
-                Forgot password?
-              </a>
-            </div>
-            
-            <button 
-              type="submit"
-              disabled={loading}
-              className="w-full py-4 bg-[#088e64] text-white border-none rounded-xl text-lg font-bold cursor-pointer transition-all duration-500 ease-out hover:bg-[#0a9f72] hover:shadow-[0_8px_20px_rgba(8,142,100,0.4)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-            >
-              {loading ? 'Signing In...' : 'Sign In'}
-            </button>
-
+            {/* Back to Landing */}
             <div className="text-center mt-6">
-              <p className="text-sm text-gray-500">
-                Don't have an account? <a href="/signup" className="text-[#088e64] font-semibold hover:text-[#0a9f72] transition-colors">Sign up</a>
-              </p>
+              <button
+                onClick={() => navigate('/')}
+                className="text-sm text-zinc-600 hover:text-neutral-900 transition-colors"
+              >
+                ← Back to home
+              </button>
             </div>
-          </form>
+          </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="py-6 text-center">
+        <p className="text-zinc-500 text-sm">© 2025 anekobtw. All Rights Reserved.</p>
+      </footer>
     </div>
   )
 }
