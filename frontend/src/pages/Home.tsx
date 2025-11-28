@@ -294,7 +294,7 @@ function Main() {
           <div className="flex items-center gap-6">
             <button 
               onClick={() => setShowProfileModal(true)}
-              className="group flex flex-col items-center gap-1 transition-all hover:scale-110"
+              className="group flex flex-col items-center gap-1 transition-all hover:scale-110 cursor-pointer"
               title="My Profile"
             >
               <div className="w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center transition-colors group-hover:bg-[#13ec6d]/10">
@@ -306,7 +306,7 @@ function Main() {
             </button>
 
             <button 
-              className="group flex flex-col items-center gap-1 transition-all hover:scale-110"
+              className="group flex flex-col items-center gap-1 transition-all hover:scale-110 cursor-pointer"
               title="Messages"
             >
               <div className="w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center transition-colors group-hover:bg-[#13ec6d]/10">
@@ -322,7 +322,7 @@ function Main() {
                 await apiClient.signOut()
                 navigate('/signin')
               }}
-              className="group flex flex-col items-center gap-1 transition-all hover:scale-110"
+              className="group flex flex-col items-center gap-1 transition-all hover:scale-110 cursor-pointer"
               title="Sign Out"
             >
               <div className="w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center transition-colors group-hover:bg-red-50">
