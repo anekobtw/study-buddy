@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import apiClient from '../api/client'
 import ProfileModal from '../components/ProfileModal'
-import './Home.css'
 import { parseClassLevel } from '../utils'
 import type { Student } from '../enums.tsx'
+import BackgroundGrid from "../assets/BackgroundGrid.svg"
 
 
 function Main() {
@@ -143,52 +143,30 @@ function Main() {
   const opacity = 1 - Math.abs(swipeOffset) / 300
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="relative flex min-h-screen w-full flex-col bg-[#f6f8f7] overflow-x-hidden font-['Inter'] bg-cover bg-center" style={{ backgroundImage: `url(${BackgroundGrid})` }}>
       <ProfileModal isOpen={showProfileModal} onClose={() => setShowProfileModal(false)} />
       
       {/* Header */}
-      <header className="p-6 flex justify-between items-center">
-        <div className="text-green-900 text-2xl font-bold">USF Study Buddy</div>
-        <div className="flex gap-4">
-          <button 
-            onClick={() => setShowProfileModal(true)}
-            className="text-green-800 cursor-pointer hover:text-[#CFC493] transition-colors"
-            title="My Profile"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-          </button>
-          <button className="text-green-800 cursor-pointer hover:text-[#CFC493] transition-colors">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-          </button>
-          <button 
-            onClick={async () => {
-              await apiClient.signOut()
-              navigate('/signin')
-            }}
-            className="text-green-800 cursor-pointer hover:text-[#CFC493] transition-colors"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-          </button>
+      <header className="px-4 md:px-10 lg:px-20 xl:px-40 py-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-neutral-900 text-2xl md:text-3xl font-bold">Study Buddy</h1>
+          <div className="text-sm text-zinc-600">
+            {cards.length > 0 && `${currentIndex + 1} / ${cards.length}`}
+          </div>
         </div>
       </header>
 
       {/* Card Container */}
-      <div className="flex-1 flex items-center justify-center px-4 py-8">
+      <div className="flex-1 flex items-center justify-center px-4 pb-24">
         {loading ? (
-          <div className="text-gray-600 text-center">
-            <div className="text-4xl mb-4">⏳</div>
-            <p>Loading study buddies...</p>
+          <div className="text-center">
+            <div className="text-5xl mb-4">⏳</div>
+            <p className="text-zinc-600 text-lg">Loading study buddies...</p>
           </div>
         ) : currentCard ? (
-          <div className="relative w-full max-w-sm">
+          <div className="relative w-full max-w-md">
             <div 
-              className="bg-white rounded-3xl shadow-2xl overflow-hidden cursor-grab active:cursor-grabbing select-none"
+              className="bg-white rounded-2xl shadow-xl overflow-hidden cursor-grab active:cursor-grabbing select-none"
               style={{
                 transform: `translateX(${swipeOffset}px) rotate(${rotation}deg)`,
                 transition: isDragging ? 'none' : 'transform 0.3s ease-out',
@@ -204,37 +182,42 @@ function Main() {
             >
               {/* Swipe Indicators */}
               {swipeOffset > 50 && (
-                <div className="absolute top-8 right-8 z-10 bg-green-500 text-white px-6 py-3 rounded-xl font-bold text-2xl rotate-12 shadow-lg">
+                <div className="absolute top-8 right-8 z-10 bg-[#13ec6d] text-white px-6 py-3 rounded-xl font-bold text-2xl rotate-12 shadow-lg">
                   LIKE
                 </div>
               )}
               {swipeOffset < -50 && (
                 <div className="absolute top-8 left-8 z-10 bg-red-500 text-white px-6 py-3 rounded-xl font-bold text-2xl -rotate-12 shadow-lg">
-                  NOPE
+                  PASS
                 </div>
               )}
               
-              {/* Card Image/Avatar */}
-              <div className="h-96 bg-linear-to-br from-[#088e64] to-[#006747] flex items-center justify-center">
-                <div className="text-white text-8xl font-bold">
-                  {(currentCard.full_name || currentCard.fullName || '?').charAt(0)}
+              {/* Card Avatar */}
+              <div className="h-80 bg-linear-to-br from-[#13ec6d] to-[#0a9f72] flex items-center justify-center">
+                <div className="w-40 h-40 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <span className="text-white text-6xl font-bold">
+                    {(currentCard.full_name || currentCard.fullName || '?').charAt(0)}
+                  </span>
                 </div>
               </div>
 
               {/* Card Info */}
               <div className="p-6 space-y-4">
-                {/* Name, Email, and Year */}
+                {/* Name and Year */}
                 <div>
                   <div className="flex items-baseline justify-between mb-1">
-                    <h2 className="text-2xl font-bold text-gray-900">{currentCard.full_name || currentCard.fullName}</h2>
-                    <span className="text-sm text-gray-500 font-medium">{currentCard.year}</span>
+                    <h2 className="text-2xl font-bold text-neutral-900">{currentCard.full_name || currentCard.fullName}</h2>
+                    <span className="text-sm text-zinc-500 font-medium">{currentCard.year}</span>
                   </div>
-                  <p className="text-gray-500 text-sm">{currentCard.usf_email || currentCard.USFEmail}</p>
+                  <p className="text-zinc-500 text-sm">{currentCard.usf_email || currentCard.USFEmail}</p>
                 </div>
                 
                 {/* Major */}
-                <div>
-                  <p className="text-[#088e64] font-semibold text-base">{currentCard.major}</p>
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-[#13ec6d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                  <p className="text-neutral-900 font-semibold">{currentCard.major}</p>
                 </div>
                 
                 {/* Study Time */}
@@ -242,19 +225,21 @@ function Main() {
                   <span className={`${getStudyTimeInfo((currentCard.preferred_study_time || currentCard.preferredStudyTime) ?? 0).color}`}>
                     {getStudyTimeInfo((currentCard.preferred_study_time || currentCard.preferredStudyTime) ?? 0).icon}
                   </span>
-                  <p className="text-sm text-gray-700">
-                    Prefers <span className="font-semibold">{getStudyTimeInfo((currentCard.preferred_study_time || currentCard.preferredStudyTime) ?? 0).label}</span> study sessions
+                  <p className="text-sm text-zinc-600">
+                    Prefers <span className="font-semibold text-neutral-900">{getStudyTimeInfo((currentCard.preferred_study_time || currentCard.preferredStudyTime) ?? 0).label}</span>
                   </p>
                 </div>
                 
                 {/* Description */}
-                <div>
-                  <p className="text-gray-700 text-sm leading-relaxed">{currentCard.description}</p>
-                </div>
+                {currentCard.description && (
+                  <div className="pt-3 border-t border-neutral-100">
+                    <p className="text-zinc-700 text-sm leading-relaxed">{currentCard.description}</p>
+                  </div>
+                )}
                 
                 {/* Classes */}
-                <div className="pt-2 border-t border-gray-100">
-                  <p className="text-sm font-semibold text-gray-700 mb-2">Classes</p>
+                <div className="pt-3 border-t border-neutral-100">
+                  <p className="text-sm font-semibold text-neutral-900 mb-2">Classes</p>
                   <div className="flex flex-wrap gap-2">
                     {Object.entries(typeof currentCard.classes === 'string' ? JSON.parse(currentCard.classes) : currentCard.classes).map(([className, level]) => {
                       const levelInfo = parseClassLevel(level as number)
@@ -270,42 +255,84 @@ function Main() {
                     })}
                   </div>
                 </div>
+
+                {/* Action Buttons */}
+                <div className="pt-4 flex justify-center items-center gap-4">
+                  <button
+                    onClick={handleDislike}
+                    className="w-14 h-14 rounded-full bg-white border-2 border-red-300 shadow-md flex items-center justify-center transition-all duration-200 hover:scale-110 hover:border-red-500 hover:bg-red-50 active:scale-95"
+                  >
+                    <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+
+                  <button
+                    onClick={handleLike}
+                    className="w-16 h-16 rounded-full bg-[#13ec6d] shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-[#0fc862] active:scale-95"
+                  >
+                    <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         ) : (
-          <div className="text-gray-800 text-center">
+          <div className="text-center">
             <div className="text-6xl mb-4">🎉</div>
-            <h2 className="text-2xl font-bold mb-2">No more profiles!</h2>
-            <p className="text-gray-600">Check back later for more study buddies</p>
+            <h2 className="text-2xl font-bold text-neutral-900 mb-2">No more profiles!</h2>
+            <p className="text-zinc-600">Check back later for more study buddies</p>
           </div>
         )}
       </div>
 
-      {/* Footer with Action Buttons */}
-      <div className="pb-8 px-4">
-        <div className="max-w-sm mx-auto flex justify-center items-center gap-6">
-          {/* Dislike Button */}
-          <button
-            onClick={handleDislike}
-            disabled={!currentCard}
-            className="w-16 h-16 rounded-full bg-red-500 shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+      {/* Bottom Dock */}
+      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-neutral-200/50 px-6 py-3">
+          <div className="flex items-center gap-6">
+            <button 
+              onClick={() => setShowProfileModal(true)}
+              className="group flex flex-col items-center gap-1 transition-all hover:scale-110"
+              title="My Profile"
+            >
+              <div className="w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center transition-colors group-hover:bg-[#13ec6d]/10">
+                <svg className="w-6 h-6 text-neutral-600 group-hover:text-[#13ec6d] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <span className="text-xs text-neutral-600 group-hover:text-[#13ec6d] font-medium transition-colors">Profile</span>
+            </button>
 
-          {/* Like Button */}
-          <button
-            onClick={handleLike}
-            disabled={!currentCard}
-            className="w-16 h-16 rounded-full bg-[#088e64] shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:bg-[#0a9f72] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-            </svg>
-          </button>
+            <button 
+              className="group flex flex-col items-center gap-1 transition-all hover:scale-110"
+              title="Messages"
+            >
+              <div className="w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center transition-colors group-hover:bg-[#13ec6d]/10">
+                <svg className="w-6 h-6 text-neutral-600 group-hover:text-[#13ec6d] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              </div>
+              <span className="text-xs text-neutral-600 group-hover:text-[#13ec6d] font-medium transition-colors">Messages</span>
+            </button>
+
+            <button 
+              onClick={async () => {
+                await apiClient.signOut()
+                navigate('/signin')
+              }}
+              className="group flex flex-col items-center gap-1 transition-all hover:scale-110"
+              title="Sign Out"
+            >
+              <div className="w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center transition-colors group-hover:bg-red-50">
+                <svg className="w-6 h-6 text-neutral-600 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+              </div>
+              <span className="text-xs text-neutral-600 group-hover:text-red-500 font-medium transition-colors">Sign Out</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

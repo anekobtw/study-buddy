@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import apiClient from '../api/client'
-import './ProfileModal.css'
 
 interface ProfileModalProps {
   isOpen: boolean
@@ -39,6 +38,17 @@ function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
       loadProfile()
     }
   }, [isOpen])
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose()
+      }
+    }
+
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [isOpen, onClose])
 
   const loadProfile = async () => {
     try {
@@ -122,88 +132,109 @@ function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   if (!isOpen) return null
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2 className="text-2xl font-bold text-[#006747]">My Profile</h2>
-          <button onClick={onClose} className="close-button">✕</button>
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="sticky top-0 bg-white border-b border-neutral-100 px-6 py-4 rounded-t-2xl flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-neutral-900">My Profile</h2>
+          <button 
+            onClick={onClose} 
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 transition-all hover:scale-110 cursor-pointer"
+          >
+            ✕
+          </button>
         </div>
 
         {error && (
-          <div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium mb-4">
+          <div className="mx-6 mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
             {error}
           </div>
         )}
 
         {profile && (
-          <div className="modal-body">
+          <div className="p-6">
             {!isEditing ? (
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-gray-500">Email</p>
-                  <p className="font-semibold">{profile.usf_email}</p>
+              <div className="space-y-6">
+                {/* Profile Avatar */}
+                <div className="flex justify-center mb-4">
+                  <div className="w-24 h-24 rounded-full bg-linear-to-br from-[#13ec6d] to-[#0a9f72] flex items-center justify-center">
+                    <span className="text-white text-4xl font-bold">
+                      {profile.full_name.charAt(0)}
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-500">Name</p>
-                  <p className="font-semibold">{profile.full_name}</p>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
+
+                <div className="space-y-4">
                   <div>
-                    <p className="text-sm text-gray-500">Year</p>
-                    <p className="font-semibold">{profile.year}</p>
+                    <p className="text-xs font-medium text-zinc-500 uppercase mb-1">Email</p>
+                    <p className="text-neutral-900 font-medium">{profile.usf_email}</p>
                   </div>
+                  
                   <div>
-                    <p className="text-sm text-gray-500">Major</p>
-                    <p className="font-semibold">{profile.major}</p>
+                    <p className="text-xs font-medium text-zinc-500 uppercase mb-1">Name</p>
+                    <p className="text-neutral-900 font-semibold text-lg">{profile.full_name}</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <p className="text-xs font-medium text-zinc-500 uppercase mb-1">Year</p>
+                      <p className="text-neutral-900 font-medium">{profile.year}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-zinc-500 uppercase mb-1">Major</p>
+                      <p className="text-neutral-900 font-medium">{profile.major}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-zinc-500 uppercase mb-1">Study Time</p>
+                      <p className="text-neutral-900 font-medium">{getStudyTimeLabel(profile.preferred_study_time)}</p>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <p className="text-xs font-medium text-zinc-500 uppercase mb-2">Classes</p>
+                    <div className="flex flex-wrap gap-2">
+                      {Object.entries(typeof profile.classes === 'string' ? JSON.parse(profile.classes) : profile.classes).map(([className, level]) => {
+                        const colors = getLevelColor(level as number)
+                        return (
+                          <span key={className} className={`${colors.bg} ${colors.text} border ${colors.border} px-3 py-1.5 rounded-lg text-xs font-medium`}>
+                            {className} • {getLevelLabel(level as number)}
+                          </span>
+                        )
+                      })}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <p className="text-xs font-medium text-zinc-500 uppercase mb-1">About</p>
+                    <p className="text-zinc-700 leading-relaxed">{profile.description}</p>
                   </div>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-500">Study Time</p>
-                  <p className="font-semibold">{getStudyTimeLabel(profile.preferred_study_time)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500 mb-2">Classes</p>
-                  <div className="flex flex-wrap gap-2">
-                    {Object.entries(typeof profile.classes === 'string' ? JSON.parse(profile.classes) : profile.classes).map(([className, level]) => {
-                      const colors = getLevelColor(level as number)
-                      return (
-                        <span key={className} className={`${colors.bg} ${colors.text} border ${colors.border} px-3 py-1.5 rounded-lg text-xs font-medium`}>
-                          {className} • {getLevelLabel(level as number)}
-                        </span>
-                      )
-                    })}
-                  </div>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">About</p>
-                  <p className="text-gray-700">{profile.description}</p>
-                </div>
+
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="w-full py-3 bg-[#088e64] text-white rounded-xl font-semibold hover:bg-[#0a9f72] transition-all"
+                  className="w-full py-3 mt-2 bg-neutral-900 text-white rounded-xl font-semibold hover:bg-[#13ec6d] transition-all hover:scale-101 cursor-pointer"
                 >
                   Edit Profile
                 </button>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
+                  <label className="block text-sm font-medium text-neutral-900 mb-2">Full Name</label>
                   <input
                     type="text"
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#088e64] focus:outline-none"
+                    className="w-full h-11 px-4 bg-white border-2 border-neutral-200 rounded-xl text-neutral-900 text-sm focus:outline-none focus:border-[#13ec6d] transition-colors"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Year</label>
+                    <label className="block text-sm font-medium text-neutral-900 mb-2">Year</label>
                     <select
                       value={formData.year}
                       onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#088e64] focus:outline-none"
+                      className="select w-full h-11 px-4 bg-white border-2 border-neutral-200 rounded-xl text-neutral-900 text-sm focus:outline-none focus:border-[#13ec6d] transition-colors cursor-pointer"
                     >
                       <option value="Freshman">Freshman</option>
                       <option value="Sophomore">Sophomore</option>
@@ -213,22 +244,22 @@ function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Major</label>
+                    <label className="block text-sm font-medium text-neutral-900 mb-2">Major</label>
                     <input
                       type="text"
                       value={formData.major}
                       onChange={(e) => setFormData({ ...formData, major: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#088e64] focus:outline-none"
+                      className="w-full h-11 px-4 bg-white border-2 border-neutral-200 rounded-xl text-neutral-900 text-sm focus:outline-none focus:border-[#13ec6d] transition-colors"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Study Time</label>
+                  <label className="block text-sm font-medium text-neutral-900 mb-2">Study Time</label>
                   <select
                     value={formData.preferredStudyTime}
                     onChange={(e) => setFormData({ ...formData, preferredStudyTime: parseInt(e.target.value) })}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#088e64] focus:outline-none"
+                    className="select w-full h-11 px-4 bg-white border-2 border-neutral-200 rounded-xl text-neutral-900 text-sm focus:outline-none focus:border-[#13ec6d] transition-colors cursor-pointer"
                   >
                     <option value={0}>☀️ Morning</option>
                     <option value={1}>🌤️ Afternoon</option>
@@ -238,20 +269,20 @@ function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Classes</label>
-                  <div className="space-y-2">
+                  <label className="block text-sm font-medium text-neutral-900 mb-2">Classes</label>
+                  <div className="space-y-3">
                     <div className="flex gap-2">
                       <input
                         type="text"
                         value={currentClass.name}
                         onChange={(e) => setCurrentClass({ ...currentClass, name: e.target.value })}
                         placeholder="Class name"
-                        className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#088e64] focus:outline-none"
+                        className="flex-1 h-11 px-4 bg-white border-2 border-neutral-200 rounded-xl text-neutral-900 text-sm placeholder:text-neutral-400 focus:outline-none focus:border-[#13ec6d] transition-colors"
                       />
                       <select
                         value={currentClass.level}
                         onChange={(e) => setCurrentClass({ ...currentClass, level: parseInt(e.target.value) })}
-                        className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#088e64] focus:outline-none"
+                        className="select h-11 px-4 bg-white border-2 border-neutral-200 rounded-xl text-neutral-900 text-sm focus:outline-none focus:border-[#13ec6d] transition-colors cursor-pointer"
                       >
                         <option value={0}>Beginner</option>
                         <option value={1}>Intermediate</option>
@@ -260,23 +291,24 @@ function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                       <button
                         type="button"
                         onClick={addClass}
-                        className="px-6 py-3 bg-[#088e64] text-white rounded-xl font-semibold hover:bg-[#0a9f72]"
+                        className="h-11 px-6 bg-neutral-900 text-white text-sm font-semibold rounded-xl hover:bg-[#13ec6d] transition-all hover:scale-105 cursor-pointer"
                       >
                         Add
                       </button>
                     </div>
 
                     {classes.length > 0 && (
-                      <div className="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-xl">
+                      <div className="flex flex-wrap gap-2 p-3 bg-neutral-50 rounded-xl">
                         {classes.map((cls, index) => {
                           const colors = getLevelColor(cls.level)
                           return (
-                            <span key={index} className={`${colors.bg} ${colors.text} border ${colors.border} px-3 py-2 rounded-lg text-sm font-medium inline-flex items-center gap-2`}>
-                              {cls.name} • {getLevelLabel(cls.level)}
+                            <span key={index} className={`${colors.bg} ${colors.text} border ${colors.border} px-3 py-1.5 rounded-lg text-sm font-medium inline-flex items-center gap-2`}>
+                              <span>{cls.name}</span>
+                              <span className="text-xs opacity-75">• {getLevelLabel(cls.level)}</span>
                               <button
                                 type="button"
                                 onClick={() => removeClass(index)}
-                                className="text-gray-500 hover:text-red-600"
+                                className="ml-1 hover:text-red-600 transition-all hover:scale-125 cursor-pointer"
                               >
                                 ✕
                               </button>
@@ -289,26 +321,26 @@ function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">About</label>
+                  <label className="block text-sm font-medium text-neutral-900 mb-2">About</label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={4}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#088e64] focus:outline-none resize-none"
+                    className="w-full px-4 py-3 bg-white border-2 border-neutral-200 rounded-xl text-neutral-900 text-sm placeholder:text-neutral-400 focus:outline-none focus:border-[#13ec6d] transition-colors resize-none"
                   />
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex gap-3 pt-2">
                   <button
                     onClick={() => setIsEditing(false)}
-                    className="flex-1 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-all"
+                    className="flex-1 h-11 border-2 border-neutral-900 text-neutral-900 rounded-xl font-semibold hover:border-[#13ec6d] hover:text-[#13ec6d] transition-all hover:scale-101 cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleSave}
                     disabled={loading}
-                    className="flex-1 py-3 bg-[#088e64] text-white rounded-xl font-semibold hover:bg-[#0a9f72] transition-all disabled:opacity-50"
+                    className="flex-1 h-11 bg-neutral-900 text-white rounded-xl font-semibold hover:bg-[#13ec6d] transition-all hover:scale-101 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 cursor-pointer"
                   >
                     {loading ? 'Saving...' : 'Save Changes'}
                   </button>
