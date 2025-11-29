@@ -12,6 +12,7 @@ class SignUpRequest(BaseModel):
     classes: Dict[str, int]
     description: str
     password: str
+    profilePicture: Optional[str] = None
 
 
 class SignInRequest(BaseModel):
@@ -28,6 +29,7 @@ class UpdateProfileRequest(BaseModel):
     preferredStudyTime: Optional[int] = None
     classes: Optional[Dict[str, int]] = None
     description: Optional[str] = None
+    profilePicture: Optional[str] = None
 
 
 class User(BaseModel):
@@ -39,6 +41,7 @@ class User(BaseModel):
     preferredStudyTime: int
     classes: Dict[str, int]
     description: str
+    profilePicture: Optional[str] = None
 
 
 class SwipeRequest(BaseModel):

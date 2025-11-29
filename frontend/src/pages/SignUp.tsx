@@ -13,7 +13,8 @@ function SignUp() {
     major: '',
     description: '',
     password: '',
-    preferredStudyTime: 0
+    preferredStudyTime: 0,
+    profilePicture: ''
   })
   
   const [classes, setClasses] = useState<{ name: string; level: number }[]>([])
@@ -63,6 +64,7 @@ function SignUp() {
         major: formData.major,
         preferredStudyTime: formData.preferredStudyTime as 0 | 1 | 2 | 3,
         description: formData.description,
+        profilePicture: (formData as any).profilePicture || undefined,
         classes: classes.reduce((acc, cls) => {
           acc[cls.name] = cls.level as 0 | 1 | 2
           return acc
@@ -123,6 +125,47 @@ function SignUp() {
 
               {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Profile picture preview + inputs */}
+                <div>
+                  <label className="block text-sm font-medium text-neutral-900 mb-2">Profile Picture (optional)</label>
+                  <div className="flex items-center gap-4">
+                    <div 
+                      onClick={() => document.getElementById('signup-file-input')?.click()}
+                      className="w-16 h-16 rounded-full bg-neutral-100 flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-80 transition-opacity border-2 border-dashed border-neutral-300 hover:border-[#13ec6d]"
+                    >
+                      {(formData as any).profilePicture ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={(formData as any).profilePicture} alt="avatar" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-neutral-400 text-xs text-center px-2">Click to upload</span>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        placeholder="Or paste image URL"
+                        value={(formData as any).profilePicture}
+                        onChange={(e) => setFormData({ ...formData, profilePicture: e.target.value })}
+                        className="w-full h-11 px-4 bg-white border-2 border-neutral-200 rounded-xl text-neutral-900 text-sm placeholder:text-neutral-400 focus:outline-none focus:border-[#13ec6d] transition-colors"
+                      />
+                      <input
+                        id="signup-file-input"
+                        type="file"
+                        accept="image/*"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0]
+                          if (!file) return
+                          const reader = new FileReader()
+                          reader.onload = () => {
+                            setFormData({ ...formData, profilePicture: reader.result as string })
+                          }
+                          reader.readAsDataURL(file)
+                        }}
+                        className="hidden"
+                      />
+                    </div>
+                  </div>
+                </div>
                 {error && (
                   <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
                     {error}
@@ -269,7 +312,7 @@ function SignUp() {
                       <button
                         type="button"
                         onClick={addClass}
-                        className="h-11 px-6 bg-neutral-900 text-white text-sm font-semibold rounded-xl hover:bg-[#13ec6d] transition-all"
+                        className="cursor-pointer h-11 px-6 bg-neutral-900 text-white text-sm font-semibold rounded-xl hover:bg-[#13ec6d] transition-all"
                       >
                         Add
                       </button>

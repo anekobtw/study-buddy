@@ -21,6 +21,7 @@ def init_db():
             full_name TEXT NOT NULL,
             password TEXT NOT NULL,
             description TEXT,
+            profile_picture TEXT,
             major TEXT NOT NULL,
             year TEXT NOT NULL,
             preferred_study_time INTEGER NOT NULL,
@@ -54,15 +55,16 @@ def create_user(
     year: str,
     preferred_study_time: int,
     classes: str,
-    description: str
+    description: str,
+    profile_picture: str = None
 ):
     if get_user_by_email(usf_email):
         raise ValueError("User with this Email already exists")
 
     cursor.execute(
         """
-        INSERT INTO users (full_name, usf_email, major, year, preferred_study_time, classes, description, password)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO users (full_name, usf_email, major, year, preferred_study_time, classes, description, profile_picture, password)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     """,
         (
             full_name,
@@ -72,6 +74,7 @@ def create_user(
             preferred_study_time,
             classes,
             description,
+            profile_picture,
             password,
         ),
     )
@@ -113,6 +116,7 @@ def update_user(email: str, **fields):
     field_map = {
         "fullName": "full_name",
         "preferredStudyTime": "preferred_study_time"
+        ,"profilePicture": "profile_picture"
     }
     
     db_fields = {field_map.get(k, k): v for k, v in fields.items()}

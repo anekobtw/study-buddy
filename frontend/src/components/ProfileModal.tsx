@@ -14,6 +14,7 @@ interface UserProfile {
   preferred_study_time: number
   classes: Record<string, number>
   description: string
+  profile_picture?: string
 }
 
 function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
@@ -27,7 +28,8 @@ function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
     major: '',
     year: '',
     preferredStudyTime: 0,
-    description: ''
+    description: '',
+    profilePicture: ''
   })
 
   const [classes, setClasses] = useState<{ name: string; level: number }[]>([])
@@ -59,7 +61,8 @@ function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
         major: data.major,
         year: data.year,
         preferredStudyTime: data.preferred_study_time,
-        description: data.description || ''
+        description: data.description || '',
+        profilePicture: data.profile_picture || (data as any).profilePicture || ''
       })
       
       const parsedClasses = typeof data.classes === 'string' 
@@ -87,6 +90,7 @@ function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
         year: formData.year as 'Freshman' | 'Sophomore' | 'Junior' | 'Senior' | 'Graduate',
         preferredStudyTime: formData.preferredStudyTime as 0 | 1 | 2 | 3,
         description: formData.description,
+        profilePicture: (formData as any).profilePicture || undefined,
         classes: classes.reduce((acc, cls) => {
           acc[cls.name] = cls.level as 0 | 1 | 2
           return acc
@@ -156,10 +160,14 @@ function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
               <div className="space-y-6">
                 {/* Profile Avatar */}
                 <div className="flex justify-center mb-4">
-                  <div className="w-24 h-24 rounded-full bg-linear-to-br from-[#13ec6d] to-[#0a9f72] flex items-center justify-center">
-                    <span className="text-white text-4xl font-bold">
-                      {profile.full_name.charAt(0)}
-                    </span>
+                  <div className="w-24 h-24 rounded-full overflow-hidden bg-neutral-100 flex items-center justify-center">
+                    {(profile.profile_picture || (profile as any).profilePicture) ? (
+                      <img src={(profile.profile_picture || (profile as any).profilePicture) as string} alt="avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-linear-to-br from-[#13ec6d] to-[#0a9f72] flex items-center justify-center">
+                        <span className="text-white text-4xl font-bold">{profile.full_name.charAt(0)}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -218,6 +226,47 @@ function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
               </div>
             ) : (
               <div className="space-y-4">
+                {/* Profile Picture Edit */}
+                <div>
+                  <label className="block text-sm font-medium text-neutral-900 mb-2">Profile Picture (optional)</label>
+                  <div className="flex items-center gap-4">
+                    <div 
+                      onClick={() => document.getElementById('profile-file-input')?.click()}
+                      className="w-16 h-16 rounded-full overflow-hidden bg-neutral-100 flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity border-2 border-dashed border-neutral-300 hover:border-[#13ec6d]"
+                    >
+                      {(formData as any).profilePicture ? (
+                        <img src={(formData as any).profilePicture} alt="avatar" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-neutral-400 text-xs text-center px-2">Click to upload</span>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        placeholder="Or paste image URL"
+                        value={(formData as any).profilePicture}
+                        onChange={(e) => setFormData({ ...formData, profilePicture: e.target.value })}
+                        className="w-full h-11 px-4 bg-white border-2 border-neutral-200 rounded-xl text-neutral-900 text-sm placeholder:text-neutral-400 focus:outline-none focus:border-[#13ec6d] transition-colors"
+                      />
+                      <input
+                        id="profile-file-input"
+                        type="file"
+                        accept="image/*"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0]
+                          if (!file) return
+                          const reader = new FileReader()
+                          reader.onload = () => {
+                            setFormData({ ...formData, profilePicture: reader.result as string })
+                          }
+                          reader.readAsDataURL(file)
+                        }}
+                        className="hidden"
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-neutral-900 mb-2">Full Name</label>
                   <input

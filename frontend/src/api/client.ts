@@ -15,6 +15,7 @@ interface SignUpRequest {
   classes: Record<string, 0 | 1 | 2>
   description: string
   password: string
+  profilePicture?: string
 }
 
 interface SwipeRequest {

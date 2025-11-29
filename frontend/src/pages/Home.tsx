@@ -193,12 +193,20 @@ function Main() {
               )}
               
               {/* Card Avatar */}
-              <div className="h-80 bg-linear-to-br from-[#13ec6d] to-[#0a9f72] flex items-center justify-center">
-                <div className="w-40 h-40 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <span className="text-white text-6xl font-bold">
-                    {(currentCard.full_name || currentCard.fullName || '?').charAt(0)}
-                  </span>
-                </div>
+              <div className="h-80 bg-linear-to-br from-[#13ec6d] to-[#0a9f72] flex items-center justify-center overflow-hidden">
+                {((currentCard as any).profile_picture || (currentCard as any).profilePicture) ? (
+                  <img 
+                    src={((currentCard as any).profile_picture || (currentCard as any).profilePicture) as string} 
+                    alt="Profile" 
+                    className="w-full h-full object-cover" 
+                  />
+                ) : (
+                  <div className="w-40 h-40 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                    <span className="text-white text-6xl font-bold">
+                      {(currentCard.full_name || currentCard.fullName || '?').charAt(0)}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Card Info */}

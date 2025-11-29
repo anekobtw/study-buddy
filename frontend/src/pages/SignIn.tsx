@@ -98,7 +98,7 @@ function SignIn() {
                 <button 
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-xl h-12 px-8 bg-neutral-900 text-white text-base font-semibold transition-all duration-300 hover:bg-[#13ec6d] hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                  className="cursor-pointer w-full rounded-xl h-12 px-8 bg-neutral-900 text-white text-base font-semibold transition-all duration-300 hover:bg-[#13ec6d] hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                 >
                   {loading ? 'Signing In...' : 'Sign In'}
                 </button>
@@ -110,7 +110,7 @@ function SignIn() {
                     <button
                       type="button"
                       onClick={() => navigate('/signup')}
-                      className="text-neutral-900 font-semibold hover:text-[#13ec6d] transition-colors"
+                      className="cursor-pointer text-neutral-900 font-semibold hover:text-[#13ec6d] transition-colors"
                     >
                       Sign Up
                     </button>
@@ -123,7 +123,7 @@ function SignIn() {
             <div className="text-center mt-6">
               <button
                 onClick={() => navigate('/')}
-                className="text-sm text-zinc-600 hover:text-neutral-900 transition-colors"
+                className="cursor-pointer text-sm text-zinc-600 hover:text-neutral-900 transition-colors"
               >
                 ← Back to home
               </button>

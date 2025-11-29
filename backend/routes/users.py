@@ -56,6 +56,7 @@ def signup(request: SignUpRequest):
             preferred_study_time=request.preferredStudyTime,
             classes=json.dumps(request.classes),
             description=request.description,
+            profile_picture=request.profilePicture,
         )
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
